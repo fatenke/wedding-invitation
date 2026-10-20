@@ -166,6 +166,10 @@ a {
   margin: 28px 0;
 }
 
+.hero h1:focus {
+  outline: none;
+}
+
 h1 em,
 h2 em {
   font-weight: 300;
@@ -741,6 +745,11 @@ h2 em {
     font-size: clamp(56px, 15vw, 78px);
   }
 
+  [dir="rtl"] .hero h1 {
+    font-size: clamp(34px, 9.5vw, 48px);
+    line-height: 1.4;
+  }
+
   .desktop-break {
     display: none;
   }
@@ -938,6 +947,44 @@ h2 em {
   outline-color: #8e7247;
 }
 
+.intro-video {
+  background: #171512;
+}
+
+.video-intro > .intro-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.intro-video-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(14, 12, 11, .24), transparent 24%);
+  pointer-events: none;
+}
+
+.intro-video-error {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  max-width: min(420px, calc(100% - 40px));
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 22px;
+  background: rgba(248, 243, 234, .94);
+  color: #594b3d;
+  text-align: center;
+}
+
+.intro-video-error p {
+  margin: 0;
+  font-size: 14px;
+}
+
 .wedding-site[inert] {
   user-select: none;
 }
@@ -962,6 +1009,7 @@ h2 em {
 }
 
 [dir="rtl"] .hero h1 {
+  font-size: clamp(40px, 6vw, 78px);
   line-height: 1.25;
 }
 

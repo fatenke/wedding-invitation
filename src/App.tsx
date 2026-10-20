@@ -176,10 +176,10 @@ export default function App() {
         <section className="celebration" aria-labelledby="celebration-title">
           <motion.header
             className="celebration-heading"
-            initial={reducedMotion ? false : { opacity: 0, y: 24 }}
+            initial={{ opacity: 0, y: reducedMotion ? 0 : 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.5 }}
-            transition={{ duration: reducedMotion ? 0 : 0.8, ease: "easeOut" }}
+            transition={{ duration: reducedMotion ? 0.35 : 0.8, ease: "easeOut" }}
           >
             <p className="celebration-kicker">{copy.eventsKicker}</p>
             <h2 id="celebration-title">{copy.eventsTitle}</h2>
@@ -216,12 +216,12 @@ export default function App() {
                 key={event.dateTime}
                 lang={language}
                 dir={language === "ar" ? "rtl" : "ltr"}
-                initial={reducedMotion ? false : { opacity: 0, y: 36 }}
+                initial={{ opacity: 0, y: reducedMotion ? 0 : 36 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.25 }}
                 transition={{
-                  duration: reducedMotion ? 0 : 0.8,
-                  delay: reducedMotion ? 0 : index * 0.12,
+                  duration: reducedMotion ? 0.35 : 0.8,
+                  delay: index * 0.12,
                   ease: "easeOut",
                 }}
               >
