@@ -89,7 +89,6 @@ export default function FlowerIntro({
         className="intro-language"
         language={language}
         label={copy.languageLabel}
-        targetLanguage={copy.languageName}
         onToggle={onToggleLanguage}
       />
 

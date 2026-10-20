@@ -3,7 +3,6 @@ import type { Language } from "../translations";
 interface LanguageToggleProps {
   language: Language;
   label: string;
-  targetLanguage: string;
   onToggle: () => void;
   className?: string;
 }
@@ -11,7 +10,6 @@ interface LanguageToggleProps {
 export default function LanguageToggle({
   language,
   label,
-  targetLanguage,
   onToggle,
   className = "",
 }: LanguageToggleProps) {
@@ -22,8 +20,11 @@ export default function LanguageToggle({
       onClick={onToggle}
       aria-label={label}
       lang={language === "en" ? "ar" : "en"}
+      aria-live="polite"
     >
-      {targetLanguage}
+      <span className={language === "en" ? "language-option is-active" : "language-option"}>EN</span>
+      <span className="language-separator" aria-hidden="true">/</span>
+      <span className={language === "ar" ? "language-option is-active" : "language-option"}>AR</span>
     </button>
   );
 }
