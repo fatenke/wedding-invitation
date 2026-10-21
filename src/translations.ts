@@ -2,7 +2,7 @@ export type Language = "en" | "ar";
 
 export const translations = {
   en: {
-    pageTitle: "Wedding Invitation | FIRST NAME & SECOND NAME",
+    pageTitle: "Wedding Invitation | Fehmi & Nouha",
     languageLabel: "Switch language to Arabic",
     musicLabel: "MUSIC",
     playMusic: "Play music",
