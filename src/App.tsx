@@ -83,7 +83,7 @@ export default function App() {
       <div className="wedding-site">
         <audio
           ref={audioRef}
-          src="/audio/Bruno%20Mars%20-%20Marry%20You.mp3"
+          src={`${import.meta.env.BASE_URL}audio/Bruno%20Mars%20-%20Marry%20You.mp3`}
           autoPlay
           loop
           preload="auto"
@@ -101,6 +101,9 @@ export default function App() {
         <section className="hero">
           <motion.div
             className="hero-image"
+            style={{
+              backgroundImage: `url("${import.meta.env.BASE_URL}images/main.jpg")`,
+            }}
             initial={
               reducedMotion
                 ? { opacity: 1, scale: 1, filter: "blur(0px)" }
@@ -242,7 +245,7 @@ export default function App() {
                 dateTime: "2027-04-02",
                 venue: copy.wtiaNightVenue,
                 mapQuery: "Top Happiness, Lac 1, Tunisia",
-                image: "/images/image.jpg",
+                image: "images/image.jpg",
                 imageAlt: `${copy.firstName} & ${copy.secondName}`,
               },
               {
@@ -251,7 +254,7 @@ export default function App() {
                 dateTime: "2027-04-04",
                 venue: copy.weddingNightVenue,
                 mapQuery: "Dar Bouraoui, Carthage, Tunisia",
-                image: "/images/image2.jpg",
+                image: "images/image2.jpg",
                 imageAlt: `${copy.firstName} & ${copy.secondName}`,
               },
             ].map((event, index) => (
@@ -270,7 +273,7 @@ export default function App() {
                 }}
               >
                 <div className="event-photo">
-                  <img src={event.image} alt={event.imageAlt} loading="lazy" />
+                  <img src={`${import.meta.env.BASE_URL}${event.image}`} alt={event.imageAlt} loading="lazy" />
                   <span className="event-number" aria-hidden="true">
                     0{index + 1}
                   </span>
@@ -325,7 +328,7 @@ export default function App() {
               </button>
 
               <div className="invitation-photo" aria-hidden="true">
-                <img src="/images/image.jpg" alt="" />
+                <img src={`${import.meta.env.BASE_URL}images/image.jpg`} alt="" />
                 <p>{copy.firstName} &amp; {copy.secondName}</p>
               </div>
               <div className="invitation-copy" lang={language} dir={language === "ar" ? "rtl" : "ltr"}>

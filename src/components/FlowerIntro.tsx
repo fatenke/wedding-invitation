@@ -82,7 +82,7 @@ export default function FlowerIntro({
     >
       <video
         className="intro-video"
-        src="/images/video.mp4"
+        src={`${import.meta.env.BASE_URL}images/video.mp4`}
         autoPlay
         muted
         playsInline

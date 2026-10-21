@@ -63,7 +63,6 @@ a {
 .hero-image {
   position: absolute;
   isolation: isolate;
-  background-image: url('/images/main.jpg');
   background-size: cover;
   background-position: center 40%;
   will-change: transform, opacity, filter;
