@@ -1,4 +1,5 @@
 import type { Language } from "../translations";
+import { Languages } from "lucide-react";
 
 interface LanguageToggleProps {
   language: Language;
@@ -22,6 +23,7 @@ export default function LanguageToggle({
       lang={language === "en" ? "ar" : "en"}
       aria-live="polite"
     >
+      <Languages size={14} strokeWidth={1.6} aria-hidden="true" />
       <span className={language === "en" ? "language-option is-active" : "language-option"}>EN</span>
       <span className="language-separator" aria-hidden="true">/</span>
       <span className={language === "ar" ? "language-option is-active" : "language-option"}>AR</span>

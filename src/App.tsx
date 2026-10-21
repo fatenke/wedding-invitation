@@ -1,23 +1,19 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { ArrowRight, ArrowUpRight, Heart, MapPin } from "lucide-react";
-import FlowerIntro from "./components/FlowerIntro";
+import { ArrowRight, ArrowUpRight, Heart, MapPin, Volume2, VolumeX } from "lucide-react";
 import LanguageToggle from "./components/LanguageToggle";
 import { translations, type Language } from "./translations";
 import "./index.css";
 
 export default function App() {
   const [language, setLanguage] = useState<Language>("en");
-  const [introState, setIntroState] = useState<"open" | "exiting" | "closed">(
-    "open",
-  );
   const [invitationOpened, setInvitationOpened] = useState(false);
-  const homeHeadingRef = useRef<HTMLHeadingElement>(null);
-  const originalBodyOverflowRef = useRef<string | null>(null);
+  const [musicPlaying, setMusicPlaying] = useState(false);
+  const [musicError, setMusicError] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
   const copy = translations[language];
   const reducedMotion = useReducedMotion();
-  const revealHero = introState !== "open";
 
   const photoTransition = reducedMotion
     ? { duration: 0 }
@@ -34,29 +30,74 @@ export default function App() {
   }, [language]);
 
   useEffect(() => {
-    const originalOverflow = document.body.style.overflow;
-    originalBodyOverflowRef.current = originalOverflow;
-    return () => {
-      document.body.style.overflow = originalOverflow;
-    };
-  }, []);
-
-  useEffect(() => {
-    if (introState !== "closed") {
-      document.body.style.overflow = "hidden";
+    const audio = audioRef.current;
+    if (!audio) {
       return;
     }
 
-    document.body.style.overflow = originalBodyOverflowRef.current ?? "";
-    const frame = requestAnimationFrame(() => {
-      homeHeadingRef.current?.focus();
-    });
-    return () => cancelAnimationFrame(frame);
-  }, [introState]);
+    const removeGestureListeners = () => {
+      document.removeEventListener("pointerdown", startMusic);
+      document.removeEventListener("keydown", startMusic);
+    };
+    const startMusic = (event?: Event) => {
+      if (
+        event?.target instanceof Element &&
+        event.target.closest(".music-button")
+      ) {
+        return;
+      }
+
+      void audio.play().then(removeGestureListeners).catch(() => {
+        // Browsers may block sound until the visitor interacts with the page.
+      });
+    };
+
+    document.addEventListener("pointerdown", startMusic);
+    document.addEventListener("keydown", startMusic);
+    startMusic();
+
+    return removeGestureListeners;
+  }, []);
+
+  const toggleMusic = async () => {
+    const audio = audioRef.current;
+    if (!audio) {
+      return;
+    }
+
+    if (!audio.paused) {
+      audio.pause();
+      return;
+    }
+
+    try {
+      await audio.play();
+      setMusicError(false);
+    } catch {
+      setMusicError(true);
+    }
+  };
 
   return (
     <main lang={language} dir={language === "ar" ? "rtl" : "ltr"}>
-      <div className="wedding-site" inert={introState !== "closed"}>
+      <div className="wedding-site">
+        <audio
+          ref={audioRef}
+          src="/audio/Bruno%20Mars%20-%20Marry%20You.mp3"
+          autoPlay
+          loop
+          preload="auto"
+          onPlay={() => {
+            setMusicPlaying(true);
+            setMusicError(false);
+          }}
+          onPause={() => setMusicPlaying(false)}
+          onError={() => {
+            setMusicPlaying(false);
+            setMusicError(true);
+            console.error("The wedding music could not be loaded.");
+          }}
+        />
         <section className="hero">
           <motion.div
             className="hero-image"
@@ -65,43 +106,48 @@ export default function App() {
                 ? { opacity: 1, scale: 1, filter: "blur(0px)" }
                 : { opacity: 0, scale: 1.08, filter: "blur(12px)" }
             }
-            animate={
-              revealHero
-                ? {
-                    opacity: 1,
-                    scale: reducedMotion ? 1 : [1.04, 1.12],
-                    filter: "blur(0px)",
-                  }
-                : reducedMotion
-                  ? { opacity: 1, scale: 1, filter: "blur(0px)" }
-                  : { opacity: 0, scale: 1.08, filter: "blur(12px)" }
-            }
+            animate={{
+              opacity: 1,
+              scale: reducedMotion ? 1 : [1.04, 1.12],
+              filter: "blur(0px)",
+            }}
             transition={photoTransition}
             aria-hidden="true"
           />
           <div className="hero-overlay" />
 
           <nav className="navbar">
+            <button
+              className={`music-button${musicPlaying ? " is-playing" : ""}`}
+              type="button"
+              onClick={toggleMusic}
+              aria-label={musicPlaying ? copy.pauseMusic : copy.playMusic}
+              aria-pressed={musicPlaying}
+              title={musicPlaying ? copy.pauseMusic : copy.playMusic}
+            >
+              {musicPlaying ? <Volume2 size={15} /> : <VolumeX size={15} />}
+              <span>{copy.musicLabel}</span>
+              <span className="music-indicator" aria-hidden="true" />
+            </button>
             <LanguageToggle
               language={language}
               label={copy.languageLabel}
               onToggle={() => setLanguage(language === "en" ? "ar" : "en")}
             />
+            {musicError && (
+              <span className="music-error" role="status">
+                {copy.musicError}
+              </span>
+            )}
           </nav>
 
           <motion.div
             className="hero-content"
             initial={reducedMotion ? false : { opacity: 0, y: 22 }}
-            animate={
-              revealHero
-                ? { opacity: 1, y: 0 }
-                : reducedMotion
-                  ? { opacity: 1, y: 0 }
-                  : { opacity: 0, y: 22 }
-            }
+            animate={{ opacity: 1, y: 0 }}
             transition={{
               duration: reducedMotion ? 0 : 1.1,
-              delay: reducedMotion || !revealHero ? 0 : 0.38,
+              delay: reducedMotion ? 0 : 0.38,
               ease: "easeOut",
             }}
             id="home"
@@ -109,18 +155,16 @@ export default function App() {
             <motion.p
               className="eyebrow"
               initial={reducedMotion ? false : { opacity: 0, y: 12 }}
-              animate={revealHero ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
-              transition={{ duration: reducedMotion ? 0 : 0.75, delay: revealHero && !reducedMotion ? 0.65 : 0 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: reducedMotion ? 0 : 0.75, delay: reducedMotion ? 0 : 0.65 }}
             >
               {copy.heroKicker}
             </motion.p>
 
             <motion.h1
-              ref={homeHeadingRef}
-              tabIndex={-1}
               initial={reducedMotion ? false : { opacity: 0, y: 18 }}
-              animate={revealHero ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
-              transition={{ duration: reducedMotion ? 0 : 0.9, delay: revealHero && !reducedMotion ? 0.82 : 0 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: reducedMotion ? 0 : 0.9, delay: reducedMotion ? 0 : 0.82 }}
             >
               {copy.heroTitleStart}
               <br />
@@ -131,8 +175,8 @@ export default function App() {
             <motion.div
               className="hero-divider"
               initial={reducedMotion ? false : { opacity: 0, scaleX: 0.4 }}
-              animate={revealHero ? { opacity: 1, scaleX: 1 } : { opacity: 0, scaleX: 0.4 }}
-              transition={{ duration: reducedMotion ? 0 : 0.9, delay: revealHero && !reducedMotion ? 1.02 : 0 }}
+              animate={{ opacity: 1, scaleX: 1 }}
+              transition={{ duration: reducedMotion ? 0 : 0.9, delay: reducedMotion ? 0 : 1.02 }}
             >
               <span />
               <Heart size={14} />
@@ -142,8 +186,8 @@ export default function App() {
             <motion.p
               className="couple-names"
               initial={reducedMotion ? false : { opacity: 0, y: 12 }}
-              animate={revealHero ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
-              transition={{ duration: reducedMotion ? 0 : 0.75, delay: revealHero && !reducedMotion ? 1.12 : 0 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: reducedMotion ? 0 : 0.75, delay: reducedMotion ? 0 : 1.12 }}
             >
               {copy.firstName} <span>&amp;</span> {copy.secondName}
             </motion.p>
@@ -151,8 +195,8 @@ export default function App() {
             <motion.p
               className="hero-description"
               initial={reducedMotion ? false : { opacity: 0, y: 12 }}
-              animate={revealHero ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
-              transition={{ duration: reducedMotion ? 0 : 0.75, delay: revealHero && !reducedMotion ? 1.28 : 0 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: reducedMotion ? 0 : 0.75, delay: reducedMotion ? 0 : 1.28 }}
             >
               {copy.heroDescriptionStart}
               <br className="desktop-break" />
@@ -163,8 +207,8 @@ export default function App() {
               className="invitation-button"
               onClick={() => setInvitationOpened(true)}
               initial={reducedMotion ? false : { opacity: 0, y: 12 }}
-              animate={revealHero ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
-              transition={{ duration: reducedMotion ? 0 : 0.75, delay: revealHero && !reducedMotion ? 1.42 : 0 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: reducedMotion ? 0 : 0.75, delay: reducedMotion ? 0 : 1.42 }}
             >
               <span>{copy.discoverInvitation}</span>
               <ArrowRight size={17} />
@@ -311,19 +355,6 @@ export default function App() {
           </motion.div>
         )}
       </div>
-
-      {introState !== "closed" && (
-        <FlowerIntro
-          language={language}
-          copy={copy}
-          onToggleLanguage={() =>
-            setLanguage(language === "en" ? "ar" : "en")
-          }
-          leaving={introState === "exiting"}
-          onEnter={() => setIntroState("exiting")}
-          onExitComplete={() => setIntroState("closed")}
-        />
-      )}
 
     </main>
   );

@@ -4,6 +4,10 @@ export const translations = {
   en: {
     pageTitle: "Wedding Invitation | FIRST NAME & SECOND NAME",
     languageLabel: "Switch language to Arabic",
+    musicLabel: "MUSIC",
+    playMusic: "Play music",
+    pauseMusic: "Pause music",
+    musicError: "Music could not be played.",
     introDialogLabel: "Wedding invitation introduction",
     introVideoError: "The opening video could not be played.",
     introKicker: "A MOMENT TO REMEMBER",
@@ -36,6 +40,10 @@ export const translations = {
   ar: {
     pageTitle: "دعوة زفاف | فهمي ونهى",
     languageLabel: "Change language to English",
+    musicLabel: "موسيقى",
+    playMusic: "تشغيل الموسيقى",
+    pauseMusic: "إيقاف الموسيقى",
+    musicError: "تعذّر تشغيل الموسيقى.",
     introDialogLabel: "مقدمة دعوة الزفاف",
     introVideoError: "تعذّر تشغيل فيديو الافتتاح.",
     introKicker: "لحظة لا تُنسى",
